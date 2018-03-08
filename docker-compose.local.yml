@@ -1,0 +1,25 @@
+version: "3.1"
+
+services:
+#  iot-api:
+#    image: avegao/iot-api:local
+#    container_name: iot-api
+#    command: --debug --temp-service-server-address: iot-temp-service:50000
+#    build:
+#      dockerfile: ./Dockerfile
+#      context: .
+#    networks:
+#      - iot-temp
+  openevse:
+    image: avegao/iot-openevse-service:develop
+    container_name: iot_openevse
+    command: --debug
+    environment:
+      GOCONDI_DATABASE_HOST: 192.168.1.177
+      GOCONDI_DATABASE_NAME: iot
+      GOCONDI_DATABASE_USERNAME: openevse
+      GOCONDI_DATABASE_PASSWORD: openevse
+      GOCONDI_DATABASE_PORT: 5432
+      GOCONDI_DATABASE_DRIVER: postgres
+    ports:
+      - "50000:50000"

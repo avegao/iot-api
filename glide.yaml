@@ -1,0 +1,23 @@
+package: github.com/avegao/iot-api
+import:
+- package: github.com/avegao/iot-temp-service
+  subpackages:
+  - resource/grpc
+  - util
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+  - ptypes/empty
+  - ptypes/timestamp
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: google.golang.org/grpc
+  version: ^1.8.0
+- package: github.com/avegao/gocondi
+  version: ^0.5.1
+- package: github.com/heroku/rollrus
+- package: github.com/gin-gonic/gin
+  version: ^1.2.0
+- package: github.com/lib/pq
+- package: github.com/swaggo/gin-swagger
