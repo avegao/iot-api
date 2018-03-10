@@ -14,6 +14,7 @@ import (
 	"time"
 	"context"
 	_ "github.com/avegao/iot-api/docs"
+	_ "github.com/lib/pq"
 )
 
 const (

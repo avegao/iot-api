@@ -7,6 +7,7 @@ import (
 	"github.com/avegao/gocondi"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"github.com/avegao/iot-api/controller/fronius"
 )
 
 func initRouter() *gin.Engine {
@@ -15,6 +16,7 @@ func initRouter() *gin.Engine {
 
 	initDocRouter(router)
 	initChargeRouter(rootRouter)
+	initFroniusRouter(rootRouter)
 
 	return router
 }
@@ -44,4 +46,19 @@ func initChargeRouter(router *gin.RouterGroup) {
 	chargerRouter.GET("/:id/version", chargerController.GetVersionAction)
 	chargerRouter.GET("/:id/voltmeter_settings", chargerController.GetVoltmeterSettingsAction)
 	chargerRouter.POST("/:id/rtc_time", chargerController.SetRtcTimeAction)
+}
+
+func initFroniusRouter(router *gin.RouterGroup) {
+	froniusRouter := router.Group("/fronius")
+
+	initFroniusCurrentDataRouter(froniusRouter)
+}
+
+func initFroniusCurrentDataRouter(router *gin.RouterGroup) {
+	currentDataRouter := router.Group("/current_data")
+	currentDataRouter.POST("/meter", froniusController.PostCurrentDataMeterAction)
+	currentDataRouter.POST("/inverter", froniusController.PostCurrentDataInverterAction)
+	currentDataRouter.POST("/powerflow", froniusController.PostCurrentDataPowerflowAction)
+	currentDataRouter.POST("/sensor_card", froniusController.PostCurrentDataSensorCardAction)
+	currentDataRouter.POST("/string_control", froniusController.PostCurrentDataStringControlAction)
 }
