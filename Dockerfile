@@ -6,8 +6,7 @@ RUN apk add --no-cache --update \
     git \
     glide
 
-COPY glide.yaml glide.yaml
-COPY glide.lock glide.lock
+COPY glide.yaml glide.lock ./
 
 RUN glide install
 

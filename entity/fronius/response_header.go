@@ -1,4 +1,4 @@
-package froniusController
+package fronius
 
 import "time"
 

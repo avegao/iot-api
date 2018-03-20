@@ -1,4 +1,6 @@
-package froniusController
+package froniusCurrentDataInverter
+
+import "github.com/avegao/iot-api/entity/fronius"
 
 type CurrentDataInverter struct {
 	Body struct {
@@ -23,5 +25,5 @@ type CurrentDataInverter struct {
 			Values map[string]int `json:"Values"`
 		} `json:"YEAR_ENERGY"`
 	} `json:"Body"`
-	Head ResponseHeader `json:"Head"`
+	Head fronius.ResponseHeader `json:"Head"`
 }

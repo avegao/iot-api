@@ -1,15 +1,17 @@
-package froniusController
+package froniusCurrentDataMeter
 
 import (
 	"time"
 	"fmt"
 	"github.com/avegao/gocondi"
 	"database/sql"
+	"github.com/avegao/iot-api/entity/fronius"
+	"github.com/pkg/errors"
 )
 
 type CurrentDataMeter struct {
-	Body CurrentDataMeterBody `json:"Body"`
-	Head ResponseHeader       `json:"Head"`
+	Body CurrentDataMeterBody   `json:"Body"`
+	Head fronius.ResponseHeader `json:"Head"`
 }
 
 type CurrentDataMeterBody map[string]CurrentDataMeterBodyElement
@@ -69,7 +71,7 @@ type CurrentDataMeterBodyElement struct {
 	VoltageACPhase3                   sql.NullFloat64 `json:"Voltage_AC_Phase_3"`
 }
 
-func (currentData CurrentDataMeterBodyElement) getQueryTable() string {
+func (currentData CurrentDataMeterBodyElement) getTableName() string {
 	return "\"fronius\".\"current_data_meter\""
 }
 
@@ -77,7 +79,7 @@ func (currentData CurrentDataMeterBodyElement) Persist() (err error) {
 	if currentData.Id == 0 {
 		err = currentData.insert()
 	} else {
-		// update
+		err = errors.New("update not supported yet")
 	}
 
 	return
@@ -93,60 +95,62 @@ func (currentData CurrentDataMeterBodyElement) insert() (err error) {
 		WithField("currentData", currentData).
 		Debugf(fmt.Sprintf("%s -> START", logTag))
 
-	insertQuery := fmt.Sprintf(
-		"INSERT INTO %s ("+
-			"\"current_ac_phase_1\","+
-			"\"current_ac_phase_2\","+
-			"\"current_ac_phase_3\","+
-			"\"current_ac_sum\","+
-			"\"enable\","+
-			"\"energy_reactive_v_ar_ac_phase_1_consumed\","+
-			"\"energy_reactive_v_ar_ac_phase_1_produced\","+
-			"\"energy_reactive_v_ar_ac_phase_2_consumed\","+
-			"\"energy_reactive_v_ar_ac_phase_2_produced\","+
-			"\"energy_reactive_v_ar_ac_phase_3_consumed\","+
-			"\"energy_reactive_v_ar_ac_phase_3_produced\","+
-			"\"energy_reactive_v_ar_ac_sum_consumed\","+
-			"\"energy_reactive_v_ar_ac_sum_produced\","+
-			"\"energy_real_w_ac_minus_absolute\","+
-			"\"energy_real_w_ac_phase_1_consumed\","+
-			"\"energy_real_w_ac_phase_1_produced\","+
-			"\"energy_real_w_ac_phase_2_consumed\","+
-			"\"energy_real_w_ac_phase_2_produced\","+
-			"\"energy_real_w_ac_phase_3_consumed\","+
-			"\"energy_real_w_ac_phase_3_produced\","+
-			"\"energy_real_w_ac_plus_absolute\","+
-			"\"energy_real_w_ac_sum_consumed\","+
-			"\"energy_real_w_ac_sum_produced\","+
-			"\"frequency_phase_average\","+
-			"\"meter_location_current\","+
-			"\"power_apparent_s_phase_1\","+
-			"\"power_apparent_s_phase_2\","+
-			"\"power_apparent_s_phase_3\","+
-			"\"power_apparent_s_sum\","+
-			"\"power_factor_phase_1\","+
-			"\"power_factor_phase_2\","+
-			"\"power_factor_phase_3\","+
-			"\"power_factor_sum\","+
-			"\"power_reactive_q_phase_1\","+
-			"\"power_reactive_q_phase_2\","+
-			"\"power_reactive_q_phase_3\","+
-			"\"power_reactive_q_sum\","+
-			"\"power_real_p_phase_1\","+
-			"\"power_real_p_phase_2\","+
-			"\"power_real_p_phase_3\","+
-			"\"power_real_p_sum\","+
-			"\"timestamp\","+
-			"\"visible\","+
-			"\"voltage_ac_phase_1\","+
-			"\"voltage_ac_phase_2\","+
-			"\"voltage_ac_phase_3\") VALUES ("+
-			"$1,$2,$3,$4,$5,$6,$7,$8,$9,"+
-			"$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,"+
-			"$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,"+
-			"$30,$31,$32,$33,$34,$35,$36,$37,$38,$39,"+
-			"$40,$41,$42,$43,$44,$45,$46)",
-		currentData.getQueryTable(),
+	insertQuery := fmt.Sprintf(`
+		INSERT INTO %s (
+			"current_ac_phase_1",
+			"current_ac_phase_2",
+			"current_ac_phase_3",
+			"current_ac_sum",
+			"enable",
+			"energy_reactive_v_ar_ac_phase_1_consumed",
+			"energy_reactive_v_ar_ac_phase_1_produced",
+			"energy_reactive_v_ar_ac_phase_2_consumed",
+			"energy_reactive_v_ar_ac_phase_2_produced",
+			"energy_reactive_v_ar_ac_phase_3_consumed",
+			"energy_reactive_v_ar_ac_phase_3_produced",
+			"energy_reactive_v_ar_ac_sum_consumed",
+			"energy_reactive_v_ar_ac_sum_produced",
+			"energy_real_w_ac_minus_absolute",
+			"energy_real_w_ac_phase_1_consumed",
+			"energy_real_w_ac_phase_1_produced",
+			"energy_real_w_ac_phase_2_consumed",
+			"energy_real_w_ac_phase_2_produced",
+			"energy_real_w_ac_phase_3_consumed",
+			"energy_real_w_ac_phase_3_produced",
+			"energy_real_w_ac_plus_absolute",
+			"energy_real_w_ac_sum_consumed",
+			"energy_real_w_ac_sum_produced",
+			"frequency_phase_average",
+			"meter_location_current",
+			"power_apparent_s_phase_1",
+			"power_apparent_s_phase_2",
+			"power_apparent_s_phase_3",
+			"power_apparent_s_sum",
+			"power_factor_phase_1",
+			"power_factor_phase_2",
+			"power_factor_phase_3",
+			"power_factor_sum",
+			"power_reactive_q_phase_1",
+			"power_reactive_q_phase_2",
+			"power_reactive_q_phase_3",
+			"power_reactive_q_sum",
+			"power_real_p_phase_1",
+			"power_real_p_phase_2",
+			"power_real_p_phase_3",
+			"power_real_p_sum",
+			"timestamp",
+			"visible",
+			"voltage_ac_phase_1",
+			"voltage_ac_phase_2",
+			"voltage_ac_phase_3"
+		) VALUES (
+			"$1,$2,$3,$4,$5,$6,$7,$8,$9,
+			"$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,
+			"$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,
+			"$30,$31,$32,$33,$34,$35,$36,$37,$38,$39,
+			"$40,$41,$42,$43,$44,$45,$46
+		)`,
+		currentData.getTableName(),
 	)
 
 	logger.

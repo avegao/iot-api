@@ -49,3 +49,47 @@ CREATE TABLE "fronius"."current_data_meter" (
   PRIMARY KEY ("id")
 );
 
+CREATE TABLE "fronius"."current_powerflow_site" (
+  "id"                        SERIAL8,
+  "battery_standby"           BOOLEAN,
+  "backup_mode"               BOOLEAN,
+  "power_from_grid"           DOUBLE PRECISION,
+  "power_load"                DOUBLE PRECISION,
+  "power_akku"                DOUBLE PRECISION,
+  "power_from_pv"             DOUBLE PRECISION,
+  "relative_self_consumption" INTEGER,
+  "relative_autonomy"         INTEGER,
+  "meter_location"            VARCHAR(16) NOT NULL,
+  "energy_day"                INTEGER,
+  "energy_year"               INTEGER,
+  "energy_total"              INTEGER,
+  "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "pk_current_powerflow_site" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "fronius"."current_powerflow_inverter" (
+  "id"            SERIAL8,
+  "id_site"       INT8        NOT NULL,
+  "battery_mode"  VARCHAR(32),
+  "device_type"   INTEGER     NOT NULL,
+  "energy_day"    INTEGER,
+  "energy_year"   INTEGER,
+  "energy_total"  INTEGER,
+  "current_power" INTEGER,
+  "soc"           INTEGER,
+  "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "pk_current_powerflow_inverter" PRIMARY KEY ("id"),
+  CONSTRAINT "fk_id_site" FOREIGN KEY ("id_site") REFERENCES "fronius"."current_powerflow_site" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE "fronius"."current_powerflow_ohmpilot" (
+  "id"             SERIAL8,
+  "id_site"        INT8             NOT NULL,
+  "power_ac_total" INTEGER          NOT NULL,
+  "state"          VARCHAR(32)      NOT NULL,
+  "temperature"    DOUBLE PRECISION NOT NULL,
+  "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "pk_current_powerflow_ohmpilot" PRIMARY KEY ("id"),
+  CONSTRAINT "fk_id_site" FOREIGN KEY ("id_site") REFERENCES "fronius"."current_powerflow_site" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+

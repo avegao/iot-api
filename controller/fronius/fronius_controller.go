@@ -5,6 +5,8 @@ import (
 	"github.com/avegao/gocondi"
 	"io/ioutil"
 	"encoding/json"
+	"github.com/avegao/iot-api/entity/fronius/current_data/meter"
+	"github.com/avegao/iot-api/entity/fronius/current_powerflow"
 )
 
 // @Router /fronius/current_data/meter [post]
@@ -24,7 +26,7 @@ func PostCurrentDataMeterAction(ginContext *gin.Context) {
 		logger.WithError(err).Panic()
 	}
 
-	var currentData CurrentDataMeter
+	var currentData froniusCurrentDataMeter.CurrentDataMeter
 	if err := json.Unmarshal(body, &currentData); err != nil {
 		logger.WithError(err).Panic()
 	}
@@ -59,7 +61,7 @@ func PostCurrentDataInverterAction(ginContext *gin.Context) {
 	//logger.WithField("body", currentData).Debug()
 }
 
-// @Router /fronius/current_data/meter [post]
+// @Router /fronius/current_data/powerflow [post]
 // @ID charger-index
 // @Summary Get all chargers
 // @Description Get all chargers
@@ -76,12 +78,12 @@ func PostCurrentDataPowerflowAction(ginContext *gin.Context) {
 		return
 	}
 
-	logger.WithField("body", string(body)).Debug()
+	var currentData froniusCurrentPowerflow.CurrentPowerflow
+	json.Unmarshal(body, &currentData)
 
-	//var currentData CurrentDataMeter
-	//json.Unmarshal(body, &currentData)
-	//
-	//logger.WithField("body", currentData).Debug()
+	currentData.Persist()
+
+	logger.WithField("id", currentData.Body.Site.Id).Debug()
 }
 
 // @Router /fronius/current_data/sensor_card [post]
